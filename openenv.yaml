@@ -1,0 +1,14 @@
+name: network-optimizer
+
+actions:
+  - reroute
+  - increase_bandwidth
+  - do_nothing
+
+state:
+  - latency
+  - packet_loss
+  - utilization
+  - queue
+
+reward: multi_objective
