@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from env.network_env import NetworkEnv
+import uvicorn
 
 app = FastAPI()
 env = NetworkEnv()
