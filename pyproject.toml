@@ -1,0 +1,16 @@
+[project]
+name = "network-openenv"
+version = "0.1.0"
+description = "Network traffic optimization OpenEnv environment"
+authors = [
+    { name = "Akshay" }
+]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "requests"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
