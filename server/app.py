@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from env.network_env import NetworkEnv
-import uvicorn
 
 app = FastAPI()
 env = NetworkEnv()
@@ -18,10 +17,6 @@ async def step(action: dict):
 async def state():
     return env.state()
 
-
-
+# REQUIRED for OpenEnv
 def main():
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
-
-if __name__ == "__main__":
-    main()
+    return app
