@@ -12,7 +12,7 @@ dependencies = [
     "openenv-core>=0.2.0"
 ]
 
-[project.entry-points."openenv.servers"]
+[project.scripts]
 server = "server.app:main"
 
 [build-system]
