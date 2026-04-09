@@ -37,6 +37,19 @@ async def main():
     res = requests.post(f"{ENV_URL}/reset", json={"task": "hard"}).json()
     state = res["observation"]
 
+    client = OpenAI(
+        base_url=os.environ["API_BASE_URL"],
+        api_key=os.environ["HF_TOKEN"]
+    )
+    # Required LLM call for validation
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "user", "content": "Hello"}
+        ],
+        max_tokens=5
+    )
+    
     for step in range(1, MAX_STEPS + 1):
         action = agent_policy(state)
 
