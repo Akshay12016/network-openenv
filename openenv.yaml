@@ -1,21 +1,27 @@
 name: network-optimizer
 
+entrypoint: server.app:main  
+
 actions:
   - reroute
   - increase_bandwidth
   - do_nothing
 
-state:
+observations:
   - latency
   - packet_loss
   - utilization
   - queue
 
-reward: multi_objective
+reward:
+  type: float
+  range: [0.0, 1.0]
 
 tasks:
   - name: easy
     description: Optimize latency
+    initial_state:
+      task: easy
     grader:
       type: score
       min: 0.0
@@ -23,6 +29,8 @@ tasks:
 
   - name: medium
     description: Optimize latency and packet loss
+    initial_state:
+      task: medium
     grader:
       type: score
       min: 0.0
@@ -30,6 +38,8 @@ tasks:
 
   - name: hard
     description: Full network optimization
+    initial_state:
+      task: hard
     grader:
       type: score
       min: 0.0
