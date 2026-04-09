@@ -87,18 +87,33 @@ class NetworkEnv:
         )
         return round(reward, 2)
     
-    def _compute_score(self):
+    def _grade_easy(self):
+        latency = self.state_data["latency"]
+        score = max(0, 1 - latency / 300)
+        return round(min(score, 1), 3)
+
+    def _grade_medium(self):
+        latency = self.state_data["latency"]
+        packet_loss = self.state_data["packet_loss"]
+        score = max(0, 1 - (latency + packet_loss * 10) / 400)
+        return round(min(score, 1), 3)
+
+    def _grade_hard(self):
         latency = self.state_data["latency"]
         packet_loss = self.state_data["packet_loss"]
         utilization = self.state_data["utilization"]
-
-        if self.task == "easy":
-            score = max(0, 1 - latency / 300)
-
-        elif self.task == "medium":
-            score = max(0, 1 - (latency + packet_loss * 10) / 400)
-
-        elif self.task == "hard":
-            score = max(0, 1 - (latency + packet_loss * 5) / 500)
-
+    
+        score = max(0, 1 - (latency + packet_loss * 5 + utilization) / 500)
         return round(min(score, 1), 3)
+
+    def _compute_score(self):
+        if self.task == "easy":
+            return self._grade_easy()
+    
+        elif self.task == "medium":
+            return self._grade_medium()
+    
+        elif self.task == "hard":
+            return self._grade_hard()
+    
+        return 0.0
