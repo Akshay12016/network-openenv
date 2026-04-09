@@ -33,22 +33,53 @@ async def main():
 
     rewards = []
     steps = 0
+    final_score = 0
 
-    res = requests.post(f"{ENV_URL}/reset", json={"task": "hard"}).json()
-    state = res["observation"]
+    # run all tasks
+    tasks = ["easy", "medium", "hard"]
 
+    # LLM call (keep it once)
     client = OpenAI(
         base_url=os.environ["API_BASE_URL"],
         api_key=os.environ["HF_TOKEN"]
     )
-    # Required LLM call for validation
-    response = client.chat.completions.create(
+
+    _ = client.chat.completions.create(
         model=MODEL_NAME,
-        messages=[
-            {"role": "user", "content": "Hello"}
-        ],
+        messages=[{"role": "user", "content": "Hello"}],
         max_tokens=5
     )
+
+    for task in tasks:
+        res = requests.post(f"{ENV_URL}/reset", json={"task": task}).json()
+        state = res["observation"]
+
+        for step in range(1, MAX_STEPS + 1):
+            action = agent_policy(state)
+
+            res = requests.post(f"{ENV_URL}/step", json={"action": action}).json()
+
+            reward = res["reward"]
+            done = res["done"]
+            state = res["observation"]
+
+            rewards.append(reward)
+            steps += 1
+
+            log_step(steps, action, reward, done)
+
+            if done:
+                break
+
+        final_score += res.get("score", 0)
+
+    # average score across tasks
+    final_score = final_score / len(tasks)
+
+    score = max(0, min(1, final_score))
+    success = score > 0.5
+
+    log_end(success, steps, score, rewards)
     
     for step in range(1, MAX_STEPS + 1):
         action = agent_policy(state)
